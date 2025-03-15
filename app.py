@@ -17,11 +17,13 @@ mongo_client = MongoClient(MONGO_URI)
 mongo_db = mongo_client[MONGO_DB]
 mongo_collection = mongo_db[MONGO_COLLECTION]
 
+
 def get_character_by_id(character_id):
     character = mongo_collection.find_one({"_id": ObjectId(character_id)})
     if character:
         character.pop("_id")
     return character
+
 
 def get_default_battle_description():
     return """
@@ -41,19 +43,15 @@ def get_default_battle_description():
 
 def create_dnd_battle_prompt(json1, json2):
     prompt = f"""
-    Придумай мне красочное описание для сражения в DnD.
-
+    Придумай мне описание для сражения в DnD.
     Я пришлю тебе описание 2 персонажей:
     1) {json1}
     2) {json2}
-
     Опиши:
     - Как первый персонаж атакует второго, попадает по нему. Расскажи про сам удар и его эффект.
-    - Как первый персонаж добивает второго, когда его ХП падают до нуля. Сделай описание ярким и эмоциональным.
-
-    Используй художественный стиль повествования, добавляя детали, эмоции и атмосферу боя.
-    Оформи результат в виде красиво разделенного текста с абзацами, выдели важные моменты.  
-    В выводе должно быть ТОЛЬКО описание без всяких вводных слов. То есть вывод - чисто описание в нормальном формате.
+    - Как первый персонаж добивает второго, когда его ХП падают до нуля. 
+    Оформи результат в виде текста с абзацами.  
+    В выводе должно быть ТОЛЬКО описание без всяких вводных слов.
     """
     return prompt.strip()
 
@@ -99,6 +97,7 @@ def generate_battle():
         return jsonify({"battle_description": battle_description}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
